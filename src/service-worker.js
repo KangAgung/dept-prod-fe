@@ -11,7 +11,7 @@ import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate } from 'workbox-strategies';
+import {NetworkFirst, StaleWhileRevalidate} from 'workbox-strategies';
 
 clientsClaim();
 
@@ -70,3 +70,14 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
+registerRoute(
+  /^https:\/\/dept-prod-be\.herokuapp\.com/,
+  new NetworkFirst({
+    cacheName: 'dept-prod-api',
+    plugins: [
+      new ExpirationPlugin({
+        maxAgeSeconds: 60 * 60 * 24 * 30,
+      }),
+    ],
+  }),
+);
